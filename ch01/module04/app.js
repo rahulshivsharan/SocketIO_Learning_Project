@@ -23,11 +23,6 @@ function Application(){
 
 	app.use("/routes",router);
 
-	/*
-	app.get("/",function(req,res){		
-		res.sendFile(__dirname + '/pages/chatWindow01.html');
-	});*/
-
 	function getRouter(){
 		return router;
 	}

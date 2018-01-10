@@ -1,0 +1,92 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Chat</title>		
+		<style type="text/css">
+			* { 
+				margin: 0; 
+				padding: 0; 
+				box-sizing: border-box; 
+			}
+		    
+		    body{ 
+		    	font: 13px Helvetica, 
+		    	Arial; 
+		    }		    
+		    
+		    form{ 
+		    	background: #000;
+		    	padding: 3px; 
+		    	position: fixed; 
+		    	bottom: 0; 
+		    	width: 100%; 
+		    }
+		    
+		    form input{ 
+		    	border: 0; 
+		    	padding: 10px; 
+		    	width: 90%; 
+		    	margin-right: .5%; 
+		    }
+		    
+		    form button{ 
+		    	width: 9%; 
+		    	background: rgb(130, 224, 255); 
+		    	border: none; 
+		    	padding: 10px; 
+		    }
+		    
+		    #messages{ 
+		    	list-style-type: none; 
+		    	margin: 0; 
+		    	padding: 0; 
+		    }
+		    
+		    #messages li{ 
+		    	padding: 5px 10px; 
+		    }
+
+		    #messages li:nth-child(odd) { 
+		    	background: #eee; 
+		    }
+		</style>
+	</head>
+	<body>
+		<ul id="messages"></ul>
+		<form action=""  id="sendForm">
+			<input id="m"  autocomplete="off" /><button type="submit">Send</button>
+		</form>
+		<script type="text/javaScript" src="/lib/jquery/dist/jquery.js"></script>		
+		<script type="text/javaScript" src="/lib/socket.io-client/dist/socket.io.js"></script>
+		<script type="text/javaScript">
+			var socket = io();
+			$(document).ready(mainFunc);
+
+			function mainFunc(){
+				var date = new Date();
+				var chatURL = "/routes/createChat?dt="+date.getTime();
+				var chat_event_ID = undefined;
+				$.post(chatURL,function(response){
+					chat_event_ID = response.chatId;					
+					console.log(" eventId Created ",chat_event_ID);
+					
+					$("#sendForm").submit(function(){
+						socket.emit(chat_event_ID,$("#m").val());
+						$("#m").val("");
+						return false;
+					});
+
+					socket.on(chat_event_ID,function(msg){
+						$("#messages").append($("<li>").text(msg));
+					});
+
+				}).fail(function(response){
+					console.log(response);
+				});
+
+
+				
+			} // end of mainFunc
+		</script>
+	</body>
+</html>
